@@ -1,18 +1,40 @@
-sudo: false
 language: node_js
-node_js: 10.16.3
+
+node_js: stable
+
+cache:
+  directories:
+  - node_modules #要缓存的文件夹
 install:
   - npm install
+
 branches:
   only:
-    - blog-source # build master branch only
+    - master # 触发持续集成的分支（未部署源码）
+
 script:
-  - hexo generate # generate static files
-deploy:
-  provider: pages
-  skip-cleanup: true
-  github-token: $GH_TOKEN
-  keep-history: true
-  on:
-    branch: blog-html
-  local-dir: public
+  - hexo clean 
+  - hexo g
+
+after_script:  #最后执行的命令
+  - cd ./public
+  - git init
+  - git config user.name "Throokie"
+  - git config user.email "secret@qq.com"
+  - git add.
+  - git commit -m "自动部署——robot"
+  - git push --force --quiet "https://${deploy_key}@${REF} master:gh-pages"
+
+
+env:
+  global:
+  - GH_REF: github.com/Throokie/Throokie.github.io
+
+# deploy:
+#   provider: pages
+#   skip-cleanup: true
+#   github-token: $GH_TOKEN
+#   keep-history: true
+#   on:
+#     branch: blog-html
+#   local-dir: public
